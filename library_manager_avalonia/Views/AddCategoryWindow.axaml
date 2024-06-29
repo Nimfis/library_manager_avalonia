@@ -1,0 +1,30 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="using:library_manager_avalonia.ViewModels"
+        mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="160"
+		MaxWidth="400"
+		MaxHeight="160"
+		CanResize="False"
+        x:Class="library_manager_avalonia.AddCategoryWindow"
+		x:DataType="vm:AddCategoryViewModel"
+        Title="Dodaj nową kategorię">
+
+	<StackPanel Orientation="Vertical" Margin="10" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+		<TextBlock Text="Nazwa kategorii:" Margin="0,0,0,10" FontSize="16" FontWeight="Bold" />
+		<TextBox Text="{Binding CategoryName}" Height="40" VerticalContentAlignment="Center" FontSize="16" />
+		<Button Content="Dodaj kategorię"
+				Margin="0,10,0,0"
+				HorizontalAlignment="Stretch"
+				Height="60"
+				VerticalAlignment="Bottom"
+				HorizontalContentAlignment="Center"
+				VerticalContentAlignment="Center"
+				Background="CornflowerBlue"
+				Foreground="White"
+				FontWeight="Bold"
+				Click="OnAddCategoryButtonClick"
+				/>
+	</StackPanel>
+</Window>

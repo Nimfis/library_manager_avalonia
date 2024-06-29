@@ -5,8 +5,8 @@ using library_manager_avalonia.Database;
 namespace library_manager_avalonia.Services
 {
     public interface ICategoryService
-    { 
-        
+    {
+        public Task AddCategory(Category category);
     }
 
     public class CategoryService : ICategoryService
