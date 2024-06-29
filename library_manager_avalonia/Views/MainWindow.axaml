@@ -1,0 +1,66 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:library_manager_avalonia.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="library_manager_avalonia.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Icon="/Assets/avalonia-logo.ico"
+        Title="library_manager_avalonia">
+
+	<Design.DataContext>
+		<!-- This only sets the DataContext for the previewer in an IDE,
+             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+		<vm:MainWindowViewModel/>
+	</Design.DataContext>
+
+	<TabControl>
+		<TabItem Header="Książki">
+			<Grid Margin="0,10,0,0">
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="20*" MinWidth="180" />
+					<ColumnDefinition Width="Auto"/>
+					<ColumnDefinition Width="80*"/>
+				</Grid.ColumnDefinitions>
+
+				<StackPanel Orientation="Vertical" Grid.Column="0" Margin="0,0,10,0">
+					<TextBlock Text="Zarządzaj książkami" FontSize="16" FontWeight="Bold"/>
+					<Button Content="Dodaj książkę"
+						Margin="0,10,0,0"
+						Height="40"
+						FontWeight="Bold"
+						HorizontalAlignment="Stretch"
+						HorizontalContentAlignment="Center"
+						VerticalContentAlignment="Center"
+						Click="Button_Click">
+					</Button>
+				</StackPanel>
+
+				<GridSplitter Grid.Column="1" Width="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="Black"/>
+
+				<StackPanel Grid.Column="2" Margin="10,0,10,10">
+				</StackPanel>
+			</Grid>
+		</TabItem>
+		<TabItem Header="Kategorie">
+			<StackPanel>
+				<!-- Add your Categories content here -->
+				<TextBlock Text="Categories content goes here."/>
+			</StackPanel>
+		</TabItem>
+		<TabItem Header="Autorzy">
+			<StackPanel>
+				<!-- Add your Authors content here -->
+				<TextBlock Text="Authors content goes here."/>
+			</StackPanel>
+		</TabItem>
+		<TabItem Header="Wypożyczalnia">
+			<StackPanel>
+				<!-- Add your Rentals content here -->
+				<TextBlock Text="Rentals content goes here."/>
+			</StackPanel>
+		</TabItem>
+	</TabControl>
+
+</Window>
