@@ -3,7 +3,7 @@ using library_manager_avalonia.Models;
 
 namespace library_manager_avalonia.Database
 {
-    internal class LibraryDbContext : DbContext
+    public class LibraryDbContext : DbContext
     {
         public DbSet<Book> Books { get; set; }
         public DbSet<Category> Categories { get; set; }
@@ -13,10 +13,9 @@ namespace library_manager_avalonia.Database
         public DbSet<BookAuthor> BookAuthors { get; set; }
         public DbSet<RentalBook> RentalBooks { get; set; }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        public LibraryDbContext(DbContextOptions<LibraryDbContext> options)
+            : base(options)
         {
-            var connectionString = "Server=(localdb)\\mssqllocaldb;Database=LibraryDB;Trusted_Connection=True;";
-            optionsBuilder.UseSqlServer(connectionString);
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

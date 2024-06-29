@@ -33,7 +33,7 @@
 						HorizontalAlignment="Stretch"
 						HorizontalContentAlignment="Center"
 						VerticalContentAlignment="Center"
-						Click="Button_Click">
+						Click="OnAddBookButtonClick">
 					</Button>
 				</StackPanel>
 
