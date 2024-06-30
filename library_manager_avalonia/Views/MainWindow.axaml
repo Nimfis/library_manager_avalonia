@@ -1,6 +1,7 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:library_manager_avalonia.ViewModels"
+		xmlns:mwt="using:library_manager_avalonia.Enums"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
@@ -11,7 +12,7 @@
         Title="library_manager_avalonia">
 
 	<TabControl SelectionChanged="TabControl_SelectionChanged">
-		<TabItem Header="Książki">
+		<TabItem Header="Książki" Tag="{x:Static mwt:MainWindowTabs.Books}">
 			<Grid Margin="0,10,0,0">
 				<Grid.ColumnDefinitions>
 					<ColumnDefinition Width="20*" MinWidth="180" />
@@ -38,7 +39,7 @@
 				</StackPanel>
 			</Grid>
 		</TabItem>
-		<TabItem Header="Kategorie">
+		<TabItem Header="Kategorie" Tag="{x:Static mwt:MainWindowTabs.Categories}">
 			<Grid Margin="0,10,0,0">
 				<Grid.ColumnDefinitions>
 					<ColumnDefinition Width="20*" MinWidth="180" />
@@ -82,13 +83,13 @@
 				</Grid>
 			</Grid>
 		</TabItem>
-		<TabItem Header="Autorzy">
+		<TabItem Header="Autorzy" Tag="{x:Static mwt:MainWindowTabs.Authors}">
 			<StackPanel>
 				<!-- Add your Authors content here -->
 				<TextBlock Text="Authors content goes here."/>
 			</StackPanel>
 		</TabItem>
-		<TabItem Header="Wypożyczalnia">
+		<TabItem Header="Wypożyczalnia" Tag="{x:Static mwt:MainWindowTabs.Rentals}">
 			<StackPanel>
 				<!-- Add your Rentals content here -->
 				<TextBlock Text="Rentals content goes here."/>

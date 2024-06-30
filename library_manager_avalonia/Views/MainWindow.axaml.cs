@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Data;
+using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using library_manager_avalonia.Core.Enums;
 using library_manager_avalonia.Core.Windows;
 using library_manager_avalonia.Database;
+using library_manager_avalonia.Enums;
 using library_manager_avalonia.Helpers;
 using library_manager_avalonia.Models;
 using library_manager_avalonia.ViewModels;
@@ -49,7 +52,7 @@ namespace library_manager_avalonia.Views
                     if (viewModel != null)
                     {
                         await MsgBox.SuccessAsync("Sukces", $"Poprawnie dodano kategorię \"{viewModel.CategoryName}\"", this);
-                        RefreshCategories();
+                        await RefreshCategories();
                     }
                 }
             };
@@ -57,23 +60,37 @@ namespace library_manager_avalonia.Views
             addCategoryWindow.Show();
         }
 
-        private void RefreshCategories()
+        private async void TabControl_SelectionChanged(object? sender, SelectionChangedEventArgs e)
+        {
+            var tabControl = sender as TabControl;
+            if (tabControl?.SelectedItem is TabItem selectedTab)
+            {
+                if (selectedTab.Tag is MainWindowTabs tabType)
+                {
+                    switch (tabType)
+                    {
+                        case MainWindowTabs.Books:
+                            break;
+                        case MainWindowTabs.Categories:
+                            await RefreshCategories();
+                            break;
+                        case MainWindowTabs.Authors:
+                            break;
+                        case MainWindowTabs.Rentals:
+                            break;
+                    }
+                }
+            }
+        }
+
+        private async Task RefreshCategories()
         {
             var viewModel = DataContext as MainWindowViewModel;
 
             if (viewModel != null)
             {
-                var categories = _categoryRepository.GetAll();
+                var categories = await _categoryRepository.GetAllAsync();
                 viewModel.LoadCategories(categories);
-            }
-        }
-
-        private void TabControl_SelectionChanged(object? sender, SelectionChangedEventArgs e)
-        {
-            var tabControl = sender as TabControl;
-            if (tabControl?.SelectedItem is TabItem selectedTab && selectedTab.Header.ToString() == "Kategorie")
-            {
-                RefreshCategories();
             }
         }
     }
