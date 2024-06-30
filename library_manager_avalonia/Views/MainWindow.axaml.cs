@@ -87,17 +87,29 @@ namespace library_manager_avalonia.Views
 
         private async void OnRemoveCategoryButtonClick(object? sender, RoutedEventArgs e)
         {
-            var confirm = await MsgBox.ConfirmAsync("Usuwanie kategorii", "Czy na pewno chcesz usunąć kategorię?", this);
-            if (confirm)
-            {
-                var viewModel = DataContext as MainWindowViewModel;
+            var viewModel = DataContext as MainWindowViewModel;
 
-                if (viewModel != null && viewModel.SelectedCategory != null)
+            if (viewModel != null && viewModel.SelectedCategory != null)
+            {
+
+                var confirm = await MsgBox.ConfirmAsync("Usuwanie kategorii", "Czy na pewno chcesz usunąć kategorię?", this);
+                if (confirm)
                 {
-                    _categoryRepository.Delete(viewModel.SelectedCategory.Id);
-                    await MsgBox.SuccessAsync("Sukces", $"Poprawnie usunięto kategorię \"{viewModel.SelectedCategory.Name}\"", this);
-                    await RefreshCategories();
+                    try
+                    {
+                        _categoryRepository.Delete(viewModel.SelectedCategory.Id);
+                        await MsgBox.SuccessAsync("Sukces", $"Poprawnie usunięto kategorię \"{viewModel.SelectedCategory.Name}\"", this);
+                        await RefreshCategories();
+                    }
+                    catch (Exception ex)
+                    {
+                        await MsgBox.ErrorAsync("Błąd", "Wystąpił błąd podczas usuwania autora", this);
+                    }
                 }
+            }
+            else
+            {
+                await MsgBox.ErrorAsync("Błąd", "Nie zaznaczono autora do usunięcia", this);
             }
         }
 
@@ -127,7 +139,7 @@ namespace library_manager_avalonia.Views
 
         private void OnAddAuthorButtonClick(object? sender, RoutedEventArgs e)
         {
-            var addAuthorWindow= _serviceProvider.GetRequiredService<AddAuthorWindow>();
+            var addAuthorWindow = _serviceProvider.GetRequiredService<AddAuthorWindow>();
             addAuthorWindow.Closed += async (s, args) =>
             {
                 var window = s as AddAuthorWindow;
@@ -147,17 +159,28 @@ namespace library_manager_avalonia.Views
 
         private async void OnRemoveAuthorButtonClick(object? sender, RoutedEventArgs e)
         {
-            var confirm = await MsgBox.ConfirmAsync("Usuwanie autora", "Czy na pewno chcesz usunąć autora?", this);
-            if (confirm)
-            {
-                var viewModel = DataContext as MainWindowViewModel;
+            var viewModel = DataContext as MainWindowViewModel;
 
-                if (viewModel != null && viewModel.SelectedAuthor != null)
+            if (viewModel != null && viewModel.SelectedAuthor != null)
+            {
+                var confirm = await MsgBox.ConfirmAsync("Usuwanie autora", "Czy na pewno chcesz usunąć autora?", this);
+                if (confirm)
                 {
-                    _authorRepository.Delete(viewModel.SelectedAuthor.Id);
-                    await MsgBox.SuccessAsync("Sukces", $"Poprawnie usunięto autora \"{viewModel.SelectedAuthor.FirstName} {viewModel.SelectedAuthor.LastName}\"", this);
-                    await RefreshAuthors();
+                    try
+                    {
+                        _authorRepository.Delete(viewModel.SelectedAuthor.Id);
+                        await MsgBox.SuccessAsync("Sukces", $"Poprawnie usunięto autora \"{viewModel.SelectedAuthor.FirstName} {viewModel.SelectedAuthor.LastName}\"", this);
+                        await RefreshAuthors();
+                    }
+                    catch (Exception ex)
+                    {
+                        await MsgBox.ErrorAsync("Błąd", "Wystąpił błąd podczas usuwania autora", this);
+                    }
                 }
+            }
+            else
+            {
+                await MsgBox.ErrorAsync("Błąd", "Nie zaznaczono autora do usunięcia", this);
             }
         }
 
