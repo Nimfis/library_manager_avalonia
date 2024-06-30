@@ -15,17 +15,26 @@ namespace library_manager_avalonia.ViewModels
             set => this.RaiseAndSetIfChanged(ref _selectedCategory, value);
         }
 
+        private AuthorViewModel _selectedAuthor;
+        public AuthorViewModel SelectedAuthor
+        {
+            get => _selectedAuthor;
+            set => this.RaiseAndSetIfChanged(ref _selectedAuthor, value);
+        }
+
         public ObservableCollection<CategoryViewModel> Categories { get; private set; }
+        public ObservableCollection<AuthorViewModel> Authors { get; private set; }
 
         public MainWindowViewModel()
         {
             Categories = new ObservableCollection<CategoryViewModel>();
+            Authors = new ObservableCollection<AuthorViewModel>();
         }
 
         public void LoadCategories(IEnumerable<Category> categories)
         {
             int orderNr = 1;
-            var categoryViewModels = categories.Select(x => new CategoryViewModel(x, orderNr++)).ToList();
+            var categoryViewModels = categories.Select(category => new CategoryViewModel(category, orderNr++)).ToList();
 
             if (Categories != null)
             {
@@ -33,6 +42,21 @@ namespace library_manager_avalonia.ViewModels
                 foreach (var category in categoryViewModels)
                 {
                     Categories.Add(category);
+                }
+            }
+        }
+
+        public void LoadAuthors(IEnumerable<Author> authors)
+        {
+            int orderNr = 1;
+            var authorViewModels = authors.Select(author => new AuthorViewModel(author, orderNr++)).ToList();
+
+            if (Authors != null)
+            {
+                Authors.Clear();
+                foreach (var author in authorViewModels)
+                {
+                    Authors.Add(author);
                 }
             }
         }

@@ -56,8 +56,14 @@ namespace library_manager_avalonia
             services.AddSingleton<IBookService, BookService>();
             services.AddSingleton<ICategoryService, CategoryService>();
             services.AddTransient<MainWindow>();
+
             services.AddTransient<AddCategoryWindow>();
             services.AddTransient<AddCategoryViewModel>();
+            services.AddTransient<CategoryViewModel>();
+
+            services.AddTransient<AddAuthorWindow>();
+            services.AddTransient<AddAuthorViewModel>();
+            services.AddTransient<AuthorViewModel>();
         }
     }
 }

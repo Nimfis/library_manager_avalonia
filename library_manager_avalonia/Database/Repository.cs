@@ -1,8 +1,8 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using library_manager_avalonia.Models;
-using System.Linq;
 
 namespace library_manager_avalonia.Database
 {

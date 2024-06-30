@@ -1,15 +1,14 @@
 ﻿using System;
-using System.Data;
-using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using System.Threading.Tasks;
+using library_manager_avalonia.Enums;
+using library_manager_avalonia.Models;
+using library_manager_avalonia.Helpers;
+using library_manager_avalonia.Database;
+using library_manager_avalonia.ViewModels;
 using library_manager_avalonia.Core.Enums;
 using library_manager_avalonia.Core.Windows;
-using library_manager_avalonia.Database;
-using library_manager_avalonia.Enums;
-using library_manager_avalonia.Helpers;
-using library_manager_avalonia.Models;
-using library_manager_avalonia.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace library_manager_avalonia.Views
@@ -18,16 +17,18 @@ namespace library_manager_avalonia.Views
     {
         private readonly IServiceProvider _serviceProvider;
         private readonly IRepository<Category> _categoryRepository;
+        private readonly IRepository<Author> _authorRepository;
 
         public MainWindow()
         {
             InitializeComponent();
         }
 
-        public MainWindow(IServiceProvider serviceProvider, IRepository<Category> categoryRepository)
+        public MainWindow(IServiceProvider serviceProvider, IRepository<Category> categoryRepository, IRepository<Author> authorRepository)
         {
             _serviceProvider = serviceProvider;
             _categoryRepository = categoryRepository;
+            _authorRepository = authorRepository;
 
             DataContext = new MainWindowViewModel();
 
@@ -49,6 +50,7 @@ namespace library_manager_avalonia.Views
                             await RefreshCategories();
                             break;
                         case MainWindowTabs.Authors:
+                            await RefreshAuthors();
                             break;
                         case MainWindowTabs.Rentals:
                             break;
@@ -68,7 +70,7 @@ namespace library_manager_avalonia.Views
             var addCategoryWindow = _serviceProvider.GetRequiredService<AddCategoryWindow>();
             addCategoryWindow.Closed += async (s, args) =>
             {
-                var window = s as AddCategoryWindow; 
+                var window = s as AddCategoryWindow;
                 if (window != null && window.Result == WindowResult.OK)
                 {
                     var viewModel = window.DataContext as AddCategoryViewModel;
@@ -86,7 +88,6 @@ namespace library_manager_avalonia.Views
         private async void OnRemoveCategoryButtonClick(object? sender, RoutedEventArgs e)
         {
             var confirm = await MsgBox.ConfirmAsync("Usuwanie kategorii", "Czy na pewno chcesz usunąć kategorię?", this);
-
             if (confirm)
             {
                 var viewModel = DataContext as MainWindowViewModel;
@@ -110,15 +111,74 @@ namespace library_manager_avalonia.Views
                     var editedCategory = e.Row.DataContext as CategoryViewModel;
                     if (editedCategory != null)
                     {
-                        // Update the database with the edited category
                         var viewModel = DataContext as MainWindowViewModel;
                         if (viewModel != null)
                         {
-                            // Assuming you have a method to update the category in your repository
                             _categoryRepository.Update(new Category
                             {
-                                Id = editedCategory.Id, // Assuming CategoryViewModel has Id property
+                                Id = editedCategory.Id,
                                 Name = editedCategory.Name
+                            });
+                        }
+                    }
+                }
+            }
+        }
+
+        private void OnAddAuthorButtonClick(object? sender, RoutedEventArgs e)
+        {
+            var addAuthorWindow= _serviceProvider.GetRequiredService<AddAuthorWindow>();
+            addAuthorWindow.Closed += async (s, args) =>
+            {
+                var window = s as AddAuthorWindow;
+                if (window != null && window.Result == WindowResult.OK)
+                {
+                    var viewModel = window.DataContext as AddAuthorViewModel;
+                    if (viewModel != null)
+                    {
+                        await MsgBox.SuccessAsync("Sukces", $"Poprawnie dodano autora \"{viewModel.FirstName} {viewModel.LastName}\"", this);
+                        await RefreshAuthors();
+                    }
+                }
+            };
+
+            addAuthorWindow.ShowDialog(this);
+        }
+
+        private async void OnRemoveAuthorButtonClick(object? sender, RoutedEventArgs e)
+        {
+            var confirm = await MsgBox.ConfirmAsync("Usuwanie autora", "Czy na pewno chcesz usunąć autora?", this);
+            if (confirm)
+            {
+                var viewModel = DataContext as MainWindowViewModel;
+
+                if (viewModel != null && viewModel.SelectedAuthor != null)
+                {
+                    _authorRepository.Delete(viewModel.SelectedAuthor.Id);
+                    await MsgBox.SuccessAsync("Sukces", $"Poprawnie usunięto autora \"{viewModel.SelectedAuthor.FirstName} {viewModel.SelectedAuthor.LastName}\"", this);
+                    await RefreshAuthors();
+                }
+            }
+        }
+
+        private void OnAuthorCellEditEnded(object? sender, DataGridCellEditEndedEventArgs e)
+        {
+            if (e.EditAction == DataGridEditAction.Commit)
+            {
+                var dataGrid = sender as DataGrid;
+                if (dataGrid != null)
+                {
+                    var editedAuthor = e.Row.DataContext as AuthorViewModel;
+                    if (editedAuthor != null)
+                    {
+                        var viewModel = DataContext as MainWindowViewModel;
+                        if (viewModel != null)
+                        {
+                            _authorRepository.Update(new Author
+                            {
+                                Id = editedAuthor.Id,
+                                FirstName = editedAuthor.FirstName,
+                                LastName = editedAuthor.LastName,
                             });
                         }
                     }
@@ -134,6 +194,17 @@ namespace library_manager_avalonia.Views
             {
                 var categories = await _categoryRepository.GetAllAsync();
                 viewModel.LoadCategories(categories);
+            }
+        }
+
+        private async Task RefreshAuthors()
+        {
+            var viewModel = DataContext as MainWindowViewModel;
+
+            if (viewModel != null)
+            {
+                var authors = await _authorRepository.GetAllAsync();
+                viewModel.LoadAuthors(authors);
             }
         }
     }

@@ -1,0 +1,59 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		xmlns:vm="using:library_manager_avalonia.ViewModels"
+        mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="230"
+        MaxWidth="400"
+		MaxHeight="230"
+		CanResize="False"
+        x:Class="library_manager_avalonia.AddAuthorWindow"
+        x:DataType="vm:AddAuthorViewModel"
+		WindowStartupLocation="CenterScreen"
+        Title="Dodaj nowego autora">
+
+	<StackPanel Orientation="Vertical" Margin="10" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+		<TextBlock Text="Imię autora:" Margin="0,0,0,10" FontSize="16" FontWeight="Bold" />
+		<TextBox Text="{Binding FirstName}" Height="40" VerticalContentAlignment="Center" FontSize="16" />
+
+		<TextBlock Text="Nazwisko autora:" Margin="0,10,0,10" FontSize="16" FontWeight="Bold" />
+		<TextBox Text="{Binding LastName}" Height="40" VerticalContentAlignment="Center" FontSize="16" />
+
+		<Grid Margin="0,8,0,0" VerticalAlignment="Bottom">
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="*" />
+				<ColumnDefinition Width="*" />
+			</Grid.ColumnDefinitions>
+
+			<Button Content="Dodaj autora"
+					Grid.Column="0"
+					Height="50"
+					HorizontalAlignment="Stretch"
+					VerticalAlignment="Center"
+					HorizontalContentAlignment="Center"
+					VerticalContentAlignment="Center"
+					Background="CornflowerBlue"
+					Foreground="White"
+					FontWeight="Bold"
+					Margin="0,0,4,0"
+					Click="OnAddAuthorButtonClick"
+					/>
+
+			<Button Content="Anuluj"
+					Grid.Column="1"
+					Height="50"
+					HorizontalAlignment="Stretch"
+					VerticalAlignment="Center"
+					HorizontalContentAlignment="Center"
+					VerticalContentAlignment="Center"
+					Background="DarkGray"
+					Foreground="White"
+					FontWeight="Bold"
+					Margin="4,0,0,0"
+					Click="OnCancelButtonClick"
+					/>
+		</Grid>
+
+	</StackPanel>
+
+</Window>
