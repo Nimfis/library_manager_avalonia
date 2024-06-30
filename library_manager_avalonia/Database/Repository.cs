@@ -19,12 +19,12 @@ namespace library_manager_avalonia.Database
 
         public IEnumerable<T> GetAll()
         {
-            return _dbSet.ToList();
+            return _dbSet.AsNoTracking().ToList();
         }
 
         public async Task<IEnumerable<T>> GetAllAsync()
         {
-            return await _dbSet.ToListAsync();
+            return await _dbSet.AsNoTracking().ToListAsync();
         }
 
         public T GetById(int id)
@@ -38,15 +38,17 @@ namespace library_manager_avalonia.Database
         }
 
         public void Add(T entity)
-        { 
+        {
             _dbSet.Add(entity);
             _context.SaveChanges();
+            Detach(entity);
         }
 
         public async Task AddAsync(T entity)
         {
             await _dbSet.AddAsync(entity);
             await _context.SaveChangesAsync();
+            Detach(entity);
         }
 
         public void Update(T entity)
@@ -61,7 +63,7 @@ namespace library_manager_avalonia.Database
             await _context.SaveChangesAsync();
         }
 
-        public void Delete(int id) 
+        public void Delete(int id)
         {
             var entity = _dbSet.Find(id);
             if (entity != null)
@@ -79,6 +81,11 @@ namespace library_manager_avalonia.Database
                 _dbSet.Remove(entity);
                 await _context.SaveChangesAsync();
             }
+        }
+
+        public void Detach(T entity)
+        {
+            _context.Entry(entity).State = EntityState.Detached;
         }
     }
 }

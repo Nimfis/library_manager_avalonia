@@ -42,7 +42,7 @@
 		<TabItem Header="Kategorie" Tag="{x:Static mwt:MainWindowTabs.Categories}">
 			<Grid Margin="0,10,0,0">
 				<Grid.ColumnDefinitions>
-					<ColumnDefinition Width="20*" MinWidth="180" />
+					<ColumnDefinition Width="20*" MinWidth="200" />
 					<ColumnDefinition Width="Auto"/>
 					<ColumnDefinition Width="80*"/>
 				</Grid.ColumnDefinitions>
@@ -58,6 +58,15 @@
 						VerticalContentAlignment="Center"
 						Click="OnAddCategoryButtonClick">
 					</Button>
+					<Button Content="Usuń kategorie"
+						Margin="0,10,0,0"
+						Height="40"
+						FontWeight="Bold"
+						HorizontalAlignment="Stretch"
+						HorizontalContentAlignment="Center"
+						VerticalContentAlignment="Center"
+						Click="OnRemoveCategoryButtonClick">
+					</Button>
 				</StackPanel>
 
 				<GridSplitter Grid.Column="1" Width="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="Black"/>
@@ -70,12 +79,14 @@
 
 					<TextBlock Text="Lista kategorii" FontSize="16" FontWeight="Bold" Margin="0,0,0,10" Grid.Row="0"/>
 					<DataGrid ItemsSource="{Binding Categories}"
+							  SelectedItem="{Binding SelectedCategory}"
                               AutoGenerateColumns="False"
                               HorizontalAlignment="Stretch"
                               VerticalAlignment="Stretch"
-                              Grid.Row="1">
+                              Grid.Row="1"
+							  CellEditEnded="OnCategoryCellEditEnded">
 						<DataGrid.Columns>
-							<DataGridTextColumn Header="Nr." Binding="{Binding OrderNr}" />
+							<DataGridTextColumn Header="Nr." Binding="{Binding OrderNr}" IsReadOnly="True" />
 							<DataGridTextColumn Header="Nazwa" Binding="{Binding Name}" />
 							<!-- Add more columns as needed -->
 						</DataGrid.Columns>

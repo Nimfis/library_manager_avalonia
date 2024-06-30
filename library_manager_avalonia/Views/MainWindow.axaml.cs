@@ -34,6 +34,29 @@ namespace library_manager_avalonia.Views
             InitializeComponent();
         }
 
+        private async void TabControl_SelectionChanged(object? sender, SelectionChangedEventArgs e)
+        {
+            var tabControl = sender as TabControl;
+            if (tabControl?.SelectedItem is TabItem selectedTab)
+            {
+                if (selectedTab.Tag is MainWindowTabs tabType)
+                {
+                    switch (tabType)
+                    {
+                        case MainWindowTabs.Books:
+                            break;
+                        case MainWindowTabs.Categories:
+                            await RefreshCategories();
+                            break;
+                        case MainWindowTabs.Authors:
+                            break;
+                        case MainWindowTabs.Rentals:
+                            break;
+                    }
+                }
+            }
+        }
+
         private void OnAddBookButtonClick(object? sender, RoutedEventArgs e)
         {
             //var addBookWindow = _serviceProvider.GetRequiredService<AddBookWindow>();
@@ -57,27 +80,47 @@ namespace library_manager_avalonia.Views
                 }
             };
 
-            addCategoryWindow.Show();
+            addCategoryWindow.ShowDialog(this);
         }
 
-        private async void TabControl_SelectionChanged(object? sender, SelectionChangedEventArgs e)
+        private async void OnRemoveCategoryButtonClick(object? sender, RoutedEventArgs e)
         {
-            var tabControl = sender as TabControl;
-            if (tabControl?.SelectedItem is TabItem selectedTab)
+            var confirm = await MsgBox.ConfirmAsync("Usuwanie kategorii", "Czy na pewno chcesz usunąć kategorię?", this);
+
+            if (confirm)
             {
-                if (selectedTab.Tag is MainWindowTabs tabType)
+                var viewModel = DataContext as MainWindowViewModel;
+
+                if (viewModel != null && viewModel.SelectedCategory != null)
                 {
-                    switch (tabType)
+                    _categoryRepository.Delete(viewModel.SelectedCategory.Id);
+                    await MsgBox.SuccessAsync("Sukces", $"Poprawnie usunięto kategorię \"{viewModel.SelectedCategory.Name}\"", this);
+                    await RefreshCategories();
+                }
+            }
+        }
+
+        private void OnCategoryCellEditEnded(object? sender, DataGridCellEditEndedEventArgs e)
+        {
+            if (e.EditAction == DataGridEditAction.Commit)
+            {
+                var dataGrid = sender as DataGrid;
+                if (dataGrid != null)
+                {
+                    var editedCategory = e.Row.DataContext as CategoryViewModel;
+                    if (editedCategory != null)
                     {
-                        case MainWindowTabs.Books:
-                            break;
-                        case MainWindowTabs.Categories:
-                            await RefreshCategories();
-                            break;
-                        case MainWindowTabs.Authors:
-                            break;
-                        case MainWindowTabs.Rentals:
-                            break;
+                        // Update the database with the edited category
+                        var viewModel = DataContext as MainWindowViewModel;
+                        if (viewModel != null)
+                        {
+                            // Assuming you have a method to update the category in your repository
+                            _categoryRepository.Update(new Category
+                            {
+                                Id = editedCategory.Id, // Assuming CategoryViewModel has Id property
+                                Name = editedCategory.Name
+                            });
+                        }
                     }
                 }
             }

@@ -33,12 +33,30 @@ namespace library_manager_avalonia.Helpers
 
             if (owner != null)
             {
-                await messageBoxStandardWindow.ShowAsPopupAsync(owner);
+                await messageBoxStandardWindow.ShowWindowDialogAsync(owner);
             }
             else
             {
                 await messageBoxStandardWindow.ShowAsync();
             }
+        }
+
+        public static async Task<bool> ConfirmAsync(string title, string message, Window owner = null)
+        {
+            var messageBoxStandardWindow = MessageBoxManager.GetMessageBoxStandard(new MessageBoxStandardParams
+            {
+                ButtonDefinitions = ButtonEnum.YesNo,
+                ContentTitle = title,
+                ContentMessage = message,
+                Icon = Icon.Question,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                CanResize = false,
+                ShowInCenter = true
+            });
+
+            var result = owner != null ? await messageBoxStandardWindow.ShowWindowDialogAsync(owner) : await messageBoxStandardWindow.ShowAsync();
+
+            return result == ButtonResult.Yes;
         }
     }
 }
