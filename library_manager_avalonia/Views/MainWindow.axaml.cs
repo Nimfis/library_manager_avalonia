@@ -1,27 +1,32 @@
+﻿using System;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using library_manager_avalonia.Core.Enums;
+using library_manager_avalonia.Core.Windows;
+using library_manager_avalonia.Database;
+using library_manager_avalonia.Helpers;
+using library_manager_avalonia.Models;
 using library_manager_avalonia.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
-using MsBox.Avalonia.Dto;
-using MsBox.Avalonia.Enums;
-using MsBox.Avalonia;
-using System;
-using System.Threading.Tasks;
 
 namespace library_manager_avalonia.Views
 {
-    public partial class MainWindow : Window
+    public partial class MainWindow : ReactiveWindowBase<MainWindowViewModel>
     {
         private readonly IServiceProvider _serviceProvider;
+        private readonly IRepository<Category> _categoryRepository;
 
         public MainWindow()
         {
             InitializeComponent();
         }
 
-        public MainWindow(IServiceProvider serviceProvider)
+        public MainWindow(IServiceProvider serviceProvider, IRepository<Category> categoryRepository)
         {
             _serviceProvider = serviceProvider;
+            _categoryRepository = categoryRepository;
+
+            DataContext = new MainWindowViewModel();
 
             InitializeComponent();
         }
@@ -32,20 +37,19 @@ namespace library_manager_avalonia.Views
             //addBookWindow.Show();
         }
 
-        private async void OnAddCategoryButtonClick(object? sender, RoutedEventArgs e)
+        private void OnAddCategoryButtonClick(object? sender, RoutedEventArgs e)
         {
             var addCategoryWindow = _serviceProvider.GetRequiredService<AddCategoryWindow>();
-
             addCategoryWindow.Closed += async (s, args) =>
             {
-                var window = s as AddCategoryWindow;
-                if (window != null)
+                var window = s as AddCategoryWindow; 
+                if (window != null && window.Result == WindowResult.OK)
                 {
                     var viewModel = window.DataContext as AddCategoryViewModel;
-
                     if (viewModel != null)
                     {
-                        await ShowMessageBoxAsync("Category Added", $"Category '{viewModel.CategoryName}' was added successfully.");
+                        await MsgBox.SuccessAsync("Sukces", $"Poprawnie dodano kategorię \"{viewModel.CategoryName}\"", this);
+                        RefreshCategories();
                     }
                 }
             };
@@ -53,18 +57,24 @@ namespace library_manager_avalonia.Views
             addCategoryWindow.Show();
         }
 
-        private async Task ShowMessageBoxAsync(string title, string message)
+        private void RefreshCategories()
         {
-            var messageBoxStandardWindow = MessageBoxManager.GetMessageBoxStandard(new MessageBoxStandardParams
-            {
-                ButtonDefinitions = ButtonEnum.Ok,
-                ContentTitle = title,
-                ContentMessage = message,
-                Icon = MsBox.Avalonia.Enums.Icon.Info,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner
-            });
+            var viewModel = DataContext as MainWindowViewModel;
 
-            await messageBoxStandardWindow.ShowAsync();
+            if (viewModel != null)
+            {
+                var categories = _categoryRepository.GetAll();
+                viewModel.LoadCategories(categories);
+            }
+        }
+
+        private void TabControl_SelectionChanged(object? sender, SelectionChangedEventArgs e)
+        {
+            var tabControl = sender as TabControl;
+            if (tabControl?.SelectedItem is TabItem selectedTab && selectedTab.Header.ToString() == "Kategorie")
+            {
+                RefreshCategories();
+            }
         }
     }
 }

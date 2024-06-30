@@ -1,11 +1,12 @@
-using Avalonia.Controls;
 using Avalonia.Interactivity;
 using library_manager_avalonia.Services;
+using library_manager_avalonia.Core.Enums;
 using library_manager_avalonia.ViewModels;
+using library_manager_avalonia.Core.Windows;
 
 namespace library_manager_avalonia;
 
-public partial class AddCategoryWindow : Window
+public partial class AddCategoryWindow : ReactiveWindowBase<AddCategoryViewModel>
 {
     private readonly ICategoryService _categoryService;
 
@@ -33,6 +34,11 @@ public partial class AddCategoryWindow : Window
             });
         }
 
-        this.Close();
+        SetResultAndClose(WindowResult.OK);
+    }
+
+    private void OnCancelButtonClick(object? sender, RoutedEventArgs e)
+    {
+        SetResultAndClose(WindowResult.Closed);
     }
 }
