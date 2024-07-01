@@ -3,9 +3,9 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 		xmlns:vm="using:library_manager_avalonia.ViewModels"
-        mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="230"
+        mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="450"
         MaxWidth="400"
-		MaxHeight="230"
+		MaxHeight="450"
 		CanResize="False"
         x:Class="library_manager_avalonia.AddBookWindow"
 		x:DataType="vm:AddBookViewModel"
@@ -24,8 +24,45 @@
 					   Height="40"
 					   VerticalAlignment="Center"
 					   HorizontalAlignment="Left"
-					   FontSize="16" />
-		
+					   FontSize="16"
+					   Increment="1"/>
+
+		<Grid Margin="0,8,0,0">
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="*" />
+				<ColumnDefinition Width="*" />
+			</Grid.ColumnDefinitions>
+
+			<StackPanel Grid.Column="0" Orientation="Vertical" Margin="0,0,6,0">
+				<TextBlock Text="Autorzy:" Margin="0,10,0,10" FontSize="16" FontWeight="Bold" />
+				<TextBlock Text="Wyszukaj autorów:" FontSize="12" Margin="0,0,0,4" />
+				<TextBox Text="{Binding AuthorSearchText}" Margin="0,0,0,6" />
+				<ListBox ItemsSource="{Binding FilteredAuthors}" SelectionMode="Multiple" SelectedItems="{Binding SelectedAuthors}" Height="100">
+					<ListBox.ItemTemplate>
+						<DataTemplate>
+							<TextBlock Text="{Binding FirstName}" />
+						</DataTemplate>
+					</ListBox.ItemTemplate>
+				</ListBox>
+			</StackPanel>
+
+			<StackPanel Grid.Column="1" Orientation="Vertical">
+				<TextBlock Text="Kategorie:" Margin="0,10,0,10" FontSize="16" FontWeight="Bold" />
+				<TextBlock Text="Wyszukaj kategorie:" FontSize="12" Margin="0,0,0,4" />
+				<TextBox Text="{Binding CategorySearchText}" Margin="0,0,0,6" />
+				<ListBox Margin="6,0,0,0" ItemsSource="{Binding FilteredCategories}" SelectionMode="Multiple" SelectedItems="{Binding SelectedCategories}" Height="100">
+					<ListBox.ItemTemplate>
+						<DataTemplate>
+							<TextBlock Text="{Binding Name}" />
+						</DataTemplate>
+					</ListBox.ItemTemplate>
+				</ListBox>
+			</StackPanel>
+
+
+		</Grid>
+
+
 		<Grid Margin="0,8,0,0" VerticalAlignment="Bottom">
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition Width="*" />
@@ -62,5 +99,5 @@
 		</Grid>
 
 	</StackPanel>
-	
+
 </Window>

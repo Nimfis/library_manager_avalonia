@@ -64,6 +64,7 @@ namespace library_manager_avalonia
             services.AddTransient<CategoryViewModel>();
             services.AddTransient<AddAuthorViewModel>();
             services.AddTransient<AuthorViewModel>();
+            services.AddTransient<AddBookViewModel>();
 
         }
     }
