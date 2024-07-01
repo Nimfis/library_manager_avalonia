@@ -296,7 +296,7 @@ namespace library_manager_avalonia.Views
 
             if (viewModel != null)
             {
-                var books = await _bookRepository.GetAllAsync();
+                var books = await _bookRepository.GetBooksWithAuthorsAndCategoriesAsync();
                 viewModel.LoadBooks(books);
             }
         }

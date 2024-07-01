@@ -87,5 +87,17 @@ namespace library_manager_avalonia.Database
         {
             _context.Entry(entity).State = EntityState.Detached;
         }
+
+        public async Task<IEnumerable<Book>> GetBooksWithAuthorsAndCategoriesAsync()
+        {
+            var dbSet = _context.Set<Book>();
+
+            return await dbSet.AsNoTracking()
+                .Include(book => book.BookAuthors)
+                    .ThenInclude(bookAuthor => bookAuthor.Author)
+                .Include(book => book.BookCategories)
+                    .ThenInclude(bookCategory => bookCategory.Category)
+                .ToListAsync();
+        }
     }
 }
