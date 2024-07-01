@@ -15,22 +15,40 @@
 		<TabItem Header="Książki" Tag="{x:Static mwt:MainWindowTabs.Books}">
 			<Grid Margin="0,10,0,0">
 				<Grid.ColumnDefinitions>
-					<ColumnDefinition Width="20*" MinWidth="180" />
+					<ColumnDefinition Width="20*" MinWidth="220" />
 					<ColumnDefinition Width="Auto"/>
 					<ColumnDefinition Width="80*"/>
 				</Grid.ColumnDefinitions>
 
 				<StackPanel Orientation="Vertical" Grid.Column="0" Margin="0,0,10,0">
-					<TextBlock Text="Zarządzaj książkami" FontSize="16" FontWeight="Bold"/>
+					<TextBlock Text="Zarządzaj książkami" FontSize="20" FontWeight="Bold"/>
+
+					<Separator Margin="0,10,0,6"></Separator>
+
 					<Button Content="Dodaj książkę"
-						Margin="0,10,0,0"
-						Height="40"
-						FontWeight="Bold"
-						HorizontalAlignment="Stretch"
-						HorizontalContentAlignment="Center"
-						VerticalContentAlignment="Center"
-						Click="OnAddBookButtonClick">
+							Margin="0,10,0,0"
+							Height="40"
+							FontWeight="Bold"
+							HorizontalAlignment="Stretch"
+							HorizontalContentAlignment="Center"
+							VerticalContentAlignment="Center"
+							Background="CornflowerBlue"
+							Foreground="White"
+							Cursor="Hand"
+							Click="OnAddBookButtonClick">
 					</Button>
+
+					<Button Content="Usuń książkę"
+							Margin="0,10,0,0"
+							Height="40"
+							FontWeight="Bold"
+							HorizontalAlignment="Stretch"
+							HorizontalContentAlignment="Center"
+							VerticalContentAlignment="Center"
+							Cursor="Hand"
+							Click="OnRemoveBookButtonClick">
+					</Button>
+
 				</StackPanel>
 
 				<GridSplitter Grid.Column="1" MinWidth="5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="#0179D8" CornerRadius="10" Cursor="DragMove"/>
@@ -42,7 +60,7 @@
 		<TabItem Header="Kategorie" Tag="{x:Static mwt:MainWindowTabs.Categories}">
 			<Grid Margin="0,10,0,0">
 				<Grid.ColumnDefinitions>
-					<ColumnDefinition Width="20*" MinWidth="200" />
+					<ColumnDefinition Width="20*" MinWidth="240" />
 					<ColumnDefinition Width="Auto"/>
 					<ColumnDefinition Width="80*"/>
 				</Grid.ColumnDefinitions>

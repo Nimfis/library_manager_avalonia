@@ -22,13 +22,22 @@ namespace library_manager_avalonia.ViewModels
             set => this.RaiseAndSetIfChanged(ref _selectedAuthor, value);
         }
 
+        private BookViewModel _selectedBook;
+        public BookViewModel SelectedBook
+        {
+            get => _selectedBook;
+            set => this.RaiseAndSetIfChanged(ref _selectedBook, value);
+        }
+
         public ObservableCollection<CategoryViewModel> Categories { get; private set; }
         public ObservableCollection<AuthorViewModel> Authors { get; private set; }
+        public ObservableCollection<BookViewModel> Books { get; private set; }
 
         public MainWindowViewModel()
         {
             Categories = new ObservableCollection<CategoryViewModel>();
             Authors = new ObservableCollection<AuthorViewModel>();
+            Books = new ObservableCollection<BookViewModel>();
         }
 
         public void LoadCategories(IEnumerable<Category> categories)
@@ -57,6 +66,21 @@ namespace library_manager_avalonia.ViewModels
                 foreach (var author in authorViewModels)
                 {
                     Authors.Add(author);
+                }
+            }
+        }
+
+        public void LoadBooks(IEnumerable<Book> books)
+        {
+            int orderNr = 1;
+            var bookViewModels = books.Select(book => new BookViewModel(book, orderNr++)).ToList();
+
+            if (Books != null)
+            {
+                Books.Clear();
+                foreach (var book in bookViewModels)
+                {
+                    Books.Add(book);
                 }
             }
         }

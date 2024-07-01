@@ -18,17 +18,19 @@ namespace library_manager_avalonia.Views
         private readonly IServiceProvider _serviceProvider;
         private readonly IRepository<Category> _categoryRepository;
         private readonly IRepository<Author> _authorRepository;
+        private readonly IRepository<Book> _bookRepository;
 
         public MainWindow()
         {
             InitializeComponent();
         }
 
-        public MainWindow(IServiceProvider serviceProvider, IRepository<Category> categoryRepository, IRepository<Author> authorRepository)
+        public MainWindow(IServiceProvider serviceProvider, IRepository<Category> categoryRepository, IRepository<Author> authorRepository, IRepository<Book> bookRepository)
         {
             _serviceProvider = serviceProvider;
             _categoryRepository = categoryRepository;
             _authorRepository = authorRepository;
+            _bookRepository = bookRepository;
 
             DataContext = new MainWindowViewModel();
 
@@ -45,6 +47,7 @@ namespace library_manager_avalonia.Views
                     switch (tabType)
                     {
                         case MainWindowTabs.Books:
+                            await RefreshBooks();
                             break;
                         case MainWindowTabs.Categories:
                             await RefreshCategories();
@@ -62,7 +65,49 @@ namespace library_manager_avalonia.Views
         private void OnAddBookButtonClick(object? sender, RoutedEventArgs e)
         {
             var addBookWindow = _serviceProvider.GetRequiredService<AddBookWindow>();
+
+            addBookWindow.Closed += async (s, args) =>
+            {
+                var window = s as AddBookWindow;
+                if (window != null && window.Result == WindowResult.OK)
+                {
+                    var viewModel = window.DataContext as AddBookViewModel;
+                    if (viewModel != null)
+                    {
+                        await MsgBox.SuccessAsync("Sukces", $"Poprawnie dodano książkę \"{viewModel.Title}\"", this);
+                        await RefreshBooks();
+                    }
+                }
+            };
+
             addBookWindow.ShowDialog(this);
+        }
+
+        private async void OnRemoveBookButtonClick(object? sender, RoutedEventArgs e)
+        {
+            var viewModel = DataContext as MainWindowViewModel;
+
+            if (viewModel != null && viewModel.SelectedBook != null)
+            {
+                var confirm = await MsgBox.ConfirmAsync("Usuwanie książki", $"Czy na pewno chcesz usunąć książkę \"{viewModel.SelectedBook.Title}\"?", this);
+                if (confirm)
+                {
+                    try
+                    {
+                        _bookRepository.Delete(viewModel.SelectedBook.Id);
+                        await MsgBox.SuccessAsync("Sukces", $"Poprawnie usunięto książkę \"{viewModel.SelectedBook.Title}\"", this);
+                        await RefreshBooks();
+                    }
+                    catch (Exception ex)
+                    {
+                        await MsgBox.ErrorAsync("Błąd", "Wystąpił błąd podczas usuwania książki", this);
+                    }
+                }
+            }
+            else
+            {
+                await MsgBox.ErrorAsync("Błąd", "Nie zaznaczono książki do usunięcia", this);
+            }
         }
 
         private void OnAddCategoryButtonClick(object? sender, RoutedEventArgs e)
@@ -91,8 +136,7 @@ namespace library_manager_avalonia.Views
 
             if (viewModel != null && viewModel.SelectedCategory != null)
             {
-
-                var confirm = await MsgBox.ConfirmAsync("Usuwanie kategorii", "Czy na pewno chcesz usunąć kategorię?", this);
+                var confirm = await MsgBox.ConfirmAsync("Usuwanie kategorii", $"Czy na pewno chcesz usunąć kategorię \"{viewModel.SelectedCategory.Name}\"?", this);
                 if (confirm)
                 {
                     try
@@ -103,13 +147,13 @@ namespace library_manager_avalonia.Views
                     }
                     catch (Exception ex)
                     {
-                        await MsgBox.ErrorAsync("Błąd", "Wystąpił błąd podczas usuwania autora", this);
+                        await MsgBox.ErrorAsync("Błąd", "Wystąpił błąd podczas usuwania kategorii", this);
                     }
                 }
             }
             else
             {
-                await MsgBox.ErrorAsync("Błąd", "Nie zaznaczono autora do usunięcia", this);
+                await MsgBox.ErrorAsync("Błąd", "Nie zaznaczono kategorii do usunięcia", this);
             }
         }
 
@@ -163,7 +207,7 @@ namespace library_manager_avalonia.Views
 
             if (viewModel != null && viewModel.SelectedAuthor != null)
             {
-                var confirm = await MsgBox.ConfirmAsync("Usuwanie autora", "Czy na pewno chcesz usunąć autora?", this);
+                var confirm = await MsgBox.ConfirmAsync("Usuwanie autora", $"Czy na pewno chcesz usunąć autora \"{viewModel.SelectedAuthor.FirstName} {viewModel.SelectedAuthor.LastName}\"?", this);
                 if (confirm)
                 {
                     try
@@ -228,6 +272,17 @@ namespace library_manager_avalonia.Views
             {
                 var authors = await _authorRepository.GetAllAsync();
                 viewModel.LoadAuthors(authors);
+            }
+        }
+
+        private async Task RefreshBooks()
+        {
+            var viewModel = DataContext as MainWindowViewModel;
+
+            if (viewModel != null)
+            {
+                var books = await _bookRepository.GetAllAsync();
+                viewModel.LoadBooks(books);
             }
         }
     }
