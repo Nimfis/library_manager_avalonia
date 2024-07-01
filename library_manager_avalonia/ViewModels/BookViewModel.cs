@@ -20,7 +20,10 @@ namespace library_manager_avalonia.ViewModels
 
         public BookViewModel(Book book, int orderNr)
         { 
+            Id = book.Id;
             OrderNr = orderNr;
+            Title = book.Title;
+            PublicationYear = book.PublicationYear;
         }
     }
 }

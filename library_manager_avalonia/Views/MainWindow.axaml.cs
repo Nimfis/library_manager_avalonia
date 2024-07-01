@@ -20,6 +20,8 @@ namespace library_manager_avalonia.Views
         private readonly IRepository<Author> _authorRepository;
         private readonly IRepository<Book> _bookRepository;
 
+        private bool _isTabInitialized = false;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -37,8 +39,21 @@ namespace library_manager_avalonia.Views
             InitializeComponent();
         }
 
+        protected override async void OnLoaded(RoutedEventArgs e)
+        {
+            await RefreshBooks();
+            base.OnLoaded(e);
+        }
+
         private async void TabControl_SelectionChanged(object? sender, SelectionChangedEventArgs e)
         {
+            // Ignore initial selection events during control initialization
+            if (!_isTabInitialized)
+            {
+                _isTabInitialized = true;
+                return;
+            }
+
             var tabControl = sender as TabControl;
             if (tabControl?.SelectedItem is TabItem selectedTab)
             {
@@ -75,7 +90,7 @@ namespace library_manager_avalonia.Views
                     if (viewModel != null)
                     {
                         await MsgBox.SuccessAsync("Sukces", $"Poprawnie dodano książkę \"{viewModel.Title}\"", this);
-                        await RefreshBooks();
+                        RefreshBooks();
                     }
                 }
             };
@@ -96,7 +111,7 @@ namespace library_manager_avalonia.Views
                     {
                         _bookRepository.Delete(viewModel.SelectedBook.Id);
                         await MsgBox.SuccessAsync("Sukces", $"Poprawnie usunięto książkę \"{viewModel.SelectedBook.Title}\"", this);
-                        await RefreshBooks();
+                        RefreshBooks();
                     }
                     catch (Exception ex)
                     {
