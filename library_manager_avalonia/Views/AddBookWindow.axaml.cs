@@ -7,6 +7,7 @@ using library_manager_avalonia.Core.Enums;
 using library_manager_avalonia.Helpers;
 using System.Linq;
 using System;
+using System.Data;
 
 namespace library_manager_avalonia;
 
@@ -69,6 +70,12 @@ public partial class AddBookWindow : ReactiveWindowBase<AddBookViewModel>
                 return;
             }
 
+            var existingBook = await _bookRepository.GetByPropertyAsync(book => book.Title.ToLower() == viewModel.Title.ToLower());
+            if (existingBook is not null)
+            {
+                await MsgBox.ErrorAsync("Błąd", "Książka o danym tytule już istnieje", this);
+                return;
+            }
 
             var book = new Book()
             {

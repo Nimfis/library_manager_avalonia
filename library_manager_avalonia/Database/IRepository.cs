@@ -1,6 +1,8 @@
 ﻿using System.Threading.Tasks;
 using System.Collections.Generic;
 using library_manager_avalonia.Models;
+using System.Linq.Expressions;
+using System;
 
 namespace library_manager_avalonia.Database
 {
@@ -14,6 +16,7 @@ namespace library_manager_avalonia.Database
 
         Task<IEnumerable<T>> GetAllAsync();
         Task<T> GetByIdAsync(int id);
+        Task<T> GetByPropertyAsync(Expression<Func<T, bool>> predicate);
         Task AddAsync(T entity);
         Task UpdateAsync(T entity);
         Task DeleteAsync(int id);

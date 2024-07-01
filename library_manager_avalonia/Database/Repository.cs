@@ -3,6 +3,8 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using library_manager_avalonia.Models;
+using System.Linq.Expressions;
+using System;
 
 namespace library_manager_avalonia.Database
 {
@@ -35,6 +37,11 @@ namespace library_manager_avalonia.Database
         public async Task<T> GetByIdAsync(int id)
         {
             return await _dbSet.FindAsync(id);
+        }
+
+        public async Task<T> GetByPropertyAsync(Expression<Func<T, bool>> predicate)
+        {
+            return await _dbSet.AsNoTracking().FirstOrDefaultAsync(predicate);
         }
 
         public void Add(T entity)

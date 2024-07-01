@@ -20,6 +20,10 @@ namespace library_manager_avalonia.Database
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Book>()
+                .HasIndex(b => b.Title)
+                .IsUnique();
+
             modelBuilder.Entity<BookCategory>()
                 .HasKey(bc => new { bc.BookId, bc.CategoryId });
             modelBuilder.Entity<BookCategory>()
