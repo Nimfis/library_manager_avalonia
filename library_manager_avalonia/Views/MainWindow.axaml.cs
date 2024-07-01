@@ -61,8 +61,8 @@ namespace library_manager_avalonia.Views
 
         private void OnAddBookButtonClick(object? sender, RoutedEventArgs e)
         {
-            //var addBookWindow = _serviceProvider.GetRequiredService<AddBookWindow>();
-            //addBookWindow.Show();
+            var addBookWindow = _serviceProvider.GetRequiredService<AddBookWindow>();
+            addBookWindow.ShowDialog(this);
         }
 
         private void OnAddCategoryButtonClick(object? sender, RoutedEventArgs e)

@@ -4,7 +4,7 @@ namespace library_manager_avalonia.Models
 {
     public class Book : BaseEntity
     {
-        public int Title { get; set; }
+        public string Title { get; set; }
         public int PublicationYear { get; set; }
 
         public ICollection<BookCategory> BookCategories { get; set; }
