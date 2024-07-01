@@ -2,7 +2,7 @@
 
 namespace library_manager_avalonia.ViewModels
 {
-    public class AuthorViewModel
+    public class AuthorViewModel : ViewModelBase
     {
         public int Id { get; set; }
         public int OrderNr { get; set; }

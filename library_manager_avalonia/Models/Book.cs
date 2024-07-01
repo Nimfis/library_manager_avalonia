@@ -7,8 +7,8 @@ namespace library_manager_avalonia.Models
         public string Title { get; set; }
         public int PublicationYear { get; set; }
 
+        public Rental Rental { get; set; }
         public ICollection<BookCategory> BookCategories { get; set; }
         public ICollection<BookAuthor> BookAuthors { get; set; }
-        public ICollection<RentalBook> RentalBooks { get; set; }
     }
 }

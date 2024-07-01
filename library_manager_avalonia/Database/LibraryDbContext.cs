@@ -11,7 +11,6 @@ namespace library_manager_avalonia.Database
         public DbSet<Rental> Rentals { get; set; }
         public DbSet<BookCategory> BookCategories { get; set; }
         public DbSet<BookAuthor> BookAuthors { get; set; }
-        public DbSet<RentalBook> RentalBooks { get; set; }
 
         public LibraryDbContext(DbContextOptions<LibraryDbContext> options)
             : base(options)
@@ -45,17 +44,11 @@ namespace library_manager_avalonia.Database
                 .HasOne(ba => ba.Author)
                 .WithMany(a => a.BookAuthors)
                 .HasForeignKey(ba => ba.AuthorId);
-
-            modelBuilder.Entity<RentalBook>()
-                .HasKey(rb => new { rb.RentalId, rb.BookId });
-            modelBuilder.Entity<RentalBook>()
-                .HasOne(rb => rb.Rental)
-                .WithMany(r => r.RentalBooks)
-                .HasForeignKey(rb => rb.RentalId);
-            modelBuilder.Entity<RentalBook>()
-                .HasOne(rb => rb.Book)
-                .WithMany(b => b.RentalBooks)
-                .HasForeignKey(rb => rb.BookId);
+            modelBuilder.Entity<Rental>()
+                .HasOne(r => r.Book)
+                .WithOne(b => b.Rental)
+                .HasForeignKey<Rental>(r => r.BookId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             base.OnModelCreating(modelBuilder);
         }

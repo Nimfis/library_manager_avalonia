@@ -19,6 +19,7 @@ namespace library_manager_avalonia.Views
         private readonly IRepository<Category> _categoryRepository;
         private readonly IRepository<Author> _authorRepository;
         private readonly IRepository<Book> _bookRepository;
+        private readonly IRepository<Rental> _rentalRepository;
 
         private bool _isTabInitialized = false;
 
@@ -27,16 +28,16 @@ namespace library_manager_avalonia.Views
             InitializeComponent();
         }
 
-        public MainWindow(IServiceProvider serviceProvider, IRepository<Category> categoryRepository, IRepository<Author> authorRepository, IRepository<Book> bookRepository)
+        public MainWindow(IServiceProvider serviceProvider, IRepository<Category> categoryRepository, IRepository<Author> authorRepository, IRepository<Book> bookRepository, IRepository<Rental> rentalRepository)
         {
             _serviceProvider = serviceProvider;
             _categoryRepository = categoryRepository;
             _authorRepository = authorRepository;
             _bookRepository = bookRepository;
-
-            DataContext = new MainWindowViewModel();
+            _rentalRepository = rentalRepository;
 
             InitializeComponent();
+            DataContext = new MainWindowViewModel();
         }
 
         protected override async void OnLoaded(RoutedEventArgs e)
@@ -71,6 +72,7 @@ namespace library_manager_avalonia.Views
                             await RefreshAuthors();
                             break;
                         case MainWindowTabs.Rentals:
+                            await RefreshRentals();
                             break;
                     }
                 }
@@ -84,10 +86,10 @@ namespace library_manager_avalonia.Views
             addBookWindow.Closed += async (s, args) =>
             {
                 var window = s as AddBookWindow;
-                if (window != null && window.Result == WindowResult.OK)
+                if (window is not null && window.Result == WindowResult.OK)
                 {
                     var viewModel = window.DataContext as AddBookViewModel;
-                    if (viewModel != null)
+                    if (viewModel is not null)
                     {
                         await MsgBox.SuccessAsync("Sukces", $"Poprawnie dodano książkę \"{viewModel.Title}\"", this);
                         RefreshBooks();
@@ -102,7 +104,7 @@ namespace library_manager_avalonia.Views
         {
             var viewModel = DataContext as MainWindowViewModel;
 
-            if (viewModel != null && viewModel.SelectedBook != null)
+            if (viewModel is not null && viewModel.SelectedBook is not null)
             {
                 var confirm = await MsgBox.ConfirmAsync("Usuwanie książki", $"Czy na pewno chcesz usunąć książkę \"{viewModel.SelectedBook.Title}\"?", this);
                 if (confirm)
@@ -131,10 +133,10 @@ namespace library_manager_avalonia.Views
             addCategoryWindow.Closed += async (s, args) =>
             {
                 var window = s as AddCategoryWindow;
-                if (window != null && window.Result == WindowResult.OK)
+                if (window is not null && window.Result == WindowResult.OK)
                 {
                     var viewModel = window.DataContext as AddCategoryViewModel;
-                    if (viewModel != null)
+                    if (viewModel is not null)
                     {
                         await MsgBox.SuccessAsync("Sukces", $"Poprawnie dodano kategorię \"{viewModel.CategoryName}\"", this);
                         await RefreshCategories();
@@ -149,7 +151,7 @@ namespace library_manager_avalonia.Views
         {
             var viewModel = DataContext as MainWindowViewModel;
 
-            if (viewModel != null && viewModel.SelectedCategory != null)
+            if (viewModel is not null && viewModel.SelectedCategory is not null)
             {
                 var confirm = await MsgBox.ConfirmAsync("Usuwanie kategorii", $"Czy na pewno chcesz usunąć kategorię \"{viewModel.SelectedCategory.Name}\"?", this);
                 if (confirm)
@@ -177,13 +179,13 @@ namespace library_manager_avalonia.Views
             if (e.EditAction == DataGridEditAction.Commit)
             {
                 var dataGrid = sender as DataGrid;
-                if (dataGrid != null)
+                if (dataGrid is not null)
                 {
                     var editedCategory = e.Row.DataContext as CategoryViewModel;
-                    if (editedCategory != null)
+                    if (editedCategory is not null)
                     {
                         var viewModel = DataContext as MainWindowViewModel;
-                        if (viewModel != null)
+                        if (viewModel is not null)
                         {
                             _categoryRepository.Update(new Category
                             {
@@ -202,10 +204,10 @@ namespace library_manager_avalonia.Views
             addAuthorWindow.Closed += async (s, args) =>
             {
                 var window = s as AddAuthorWindow;
-                if (window != null && window.Result == WindowResult.OK)
+                if (window is not null && window.Result == WindowResult.OK)
                 {
                     var viewModel = window.DataContext as AddAuthorViewModel;
-                    if (viewModel != null)
+                    if (viewModel is not null)
                     {
                         await MsgBox.SuccessAsync("Sukces", $"Poprawnie dodano autora \"{viewModel.FirstName} {viewModel.LastName}\"", this);
                         await RefreshAuthors();
@@ -220,7 +222,7 @@ namespace library_manager_avalonia.Views
         {
             var viewModel = DataContext as MainWindowViewModel;
 
-            if (viewModel != null && viewModel.SelectedAuthor != null)
+            if (viewModel is not null && viewModel.SelectedAuthor is not null)
             {
                 var confirm = await MsgBox.ConfirmAsync("Usuwanie autora", $"Czy na pewno chcesz usunąć autora \"{viewModel.SelectedAuthor.FirstName} {viewModel.SelectedAuthor.LastName}\"?", this);
                 if (confirm)
@@ -248,13 +250,13 @@ namespace library_manager_avalonia.Views
             if (e.EditAction == DataGridEditAction.Commit)
             {
                 var dataGrid = sender as DataGrid;
-                if (dataGrid != null)
+                if (dataGrid is not null)
                 {
                     var editedAuthor = e.Row.DataContext as AuthorViewModel;
-                    if (editedAuthor != null)
+                    if (editedAuthor is not null)
                     {
                         var viewModel = DataContext as MainWindowViewModel;
-                        if (viewModel != null)
+                        if (viewModel is not null)
                         {
                             _authorRepository.Update(new Author
                             {
@@ -268,11 +270,59 @@ namespace library_manager_avalonia.Views
             }
         }
 
+        private async void OnAddRentalButtonClick(object? sender, RoutedEventArgs e)
+        {
+            var viewModel = DataContext as MainWindowViewModel;
+            if (viewModel is null)
+            {
+                await MsgBox.ErrorAsync("Błąd", "Wystąpił nieoczekiwany błąd podczas dodawania wypożyczenia", this);
+                return;
+            }
+
+            var addRental = viewModel.AddRental;
+            if (addRental is null)
+            {
+                await MsgBox.ErrorAsync("Błąd", "Wystąpił nieoczekiwany błąd podczas dodawania wypożyczenia", this);
+                return;
+            }
+
+            var validationResult = !string.IsNullOrWhiteSpace(addRental.FirstName)
+                && !string.IsNullOrWhiteSpace(addRental.LastName)
+                && !string.IsNullOrWhiteSpace(addRental.Address)
+                && !string.IsNullOrWhiteSpace(addRental.PhoneNumber)
+                && addRental.SelectedBook is not null
+                && addRental.RentalFrom is not null
+                && addRental.RentalTo is not null;
+
+            if (validationResult)
+            {
+                _rentalRepository.Add(new()
+                {
+                    FirstName = addRental.FirstName,
+                    LastName = addRental.LastName,
+                    Address = addRental.Address,
+                    PhoneNumber = addRental.PhoneNumber,
+                    RentalFrom = addRental.RentalFrom!.Value,
+                    RentalTo = addRental.RentalTo!.Value,
+                    RentalStatus = string.Empty,
+                    BookId = addRental.SelectedBook!.Id,
+                    Book = await _bookRepository.GetByIdAsync(addRental.SelectedBook!.Id)
+                });
+
+                await MsgBox.SuccessAsync("Sukces", $"Poprawnie dodano wypożyczenie książki \"{addRental.SelectedBook.Title}\" użytkownikowi \"{addRental.FirstName} {addRental.LastName}\"");
+                await RefreshRentals();
+            }
+            else
+            {
+                await MsgBox.ErrorAsync("Błąd", "Wprowadzono niepoprawne dane. Proszę poprawić dane w formularzu", this);
+            }
+        }
+
         private async Task RefreshCategories()
         {
             var viewModel = DataContext as MainWindowViewModel;
 
-            if (viewModel != null)
+            if (viewModel is not null)
             {
                 var categories = await _categoryRepository.GetAllAsync();
                 viewModel.LoadCategories(categories);
@@ -283,7 +333,7 @@ namespace library_manager_avalonia.Views
         {
             var viewModel = DataContext as MainWindowViewModel;
 
-            if (viewModel != null)
+            if (viewModel is not null)
             {
                 var authors = await _authorRepository.GetAllAsync();
                 viewModel.LoadAuthors(authors);
@@ -294,10 +344,21 @@ namespace library_manager_avalonia.Views
         {
             var viewModel = DataContext as MainWindowViewModel;
 
-            if (viewModel != null)
+            if (viewModel is not null)
             {
                 var books = await _bookRepository.GetBooksWithAuthorsAndCategoriesAsync();
                 viewModel.LoadBooks(books);
+            }
+        }
+
+        private async Task RefreshRentals()
+        {
+            var viewModel = DataContext as MainWindowViewModel;
+
+            if (viewModel is not null)
+            { 
+                var rentals = await _rentalRepository.GetRentalsWithBooks();
+                viewModel.LoadRentals(rentals);
             }
         }
     }

@@ -106,5 +106,14 @@ namespace library_manager_avalonia.Database
                     .ThenInclude(bookCategory => bookCategory.Category)
                 .ToListAsync();
         }
+
+        public async Task<IEnumerable<Rental>> GetRentalsWithBooks()
+        {
+            var dbSet = _context.Set<Rental>();
+
+            return await dbSet.AsNoTracking()
+                .Include(rental => rental.Book)
+                .ToListAsync();
+        }
     }
 }

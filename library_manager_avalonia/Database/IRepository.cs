@@ -22,5 +22,6 @@ namespace library_manager_avalonia.Database
         Task DeleteAsync(int id);
 
         Task<IEnumerable<Book>> GetBooksWithAuthorsAndCategoriesAsync();
+        Task<IEnumerable<Rental>> GetRentalsWithBooks();
     }
 }

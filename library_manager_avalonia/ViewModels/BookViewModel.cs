@@ -4,7 +4,7 @@ using library_manager_avalonia.Models;
 
 namespace library_manager_avalonia.ViewModels
 {
-    public class BookViewModel
+    public class BookViewModel : ViewModelBase
     {
         public int OrderNr { get; set; }
         public int Id { get; set; }

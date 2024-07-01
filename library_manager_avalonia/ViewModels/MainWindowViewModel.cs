@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using library_manager_avalonia.Models;
 using ReactiveUI;
+using DynamicData;
 
 namespace library_manager_avalonia.ViewModels
 {
@@ -29,15 +30,26 @@ namespace library_manager_avalonia.ViewModels
             set => this.RaiseAndSetIfChanged(ref _selectedBook, value);
         }
 
+        private AddRentalViewModel _addRental;
+        public AddRentalViewModel AddRental
+        {
+            get => _addRental;
+            set => this.RaiseAndSetIfChanged(ref _addRental, value);
+        }
+
         public ObservableCollection<CategoryViewModel> Categories { get; private set; }
         public ObservableCollection<AuthorViewModel> Authors { get; private set; }
         public ObservableCollection<BookViewModel> Books { get; private set; }
+        public ObservableCollection<RentalViewModel> Rentals { get; private set; }
 
         public MainWindowViewModel()
         {
             Categories = new ObservableCollection<CategoryViewModel>();
             Authors = new ObservableCollection<AuthorViewModel>();
             Books = new ObservableCollection<BookViewModel>();
+            Rentals = new ObservableCollection<RentalViewModel>();
+
+            AddRental = new AddRentalViewModel();
         }
 
         public void LoadCategories(IEnumerable<Category> categories)
@@ -81,6 +93,21 @@ namespace library_manager_avalonia.ViewModels
                 foreach (var book in bookViewModels)
                 {
                     Books.Add(book);
+                }
+            }
+        }
+
+        public void LoadRentals(IEnumerable<Rental> rentals)
+        {
+            int orderNr = 1;
+            var rentalViewModels = rentals.Select(rental => new RentalViewModel(rental, orderNr++)).ToList();
+
+            if (Rentals != null)
+            {
+                Rentals.Clear();
+                foreach (var rental in rentalViewModels)
+                {
+                    Rentals.Add(rental);
                 }
             }
         }
