@@ -10,6 +10,7 @@ using library_manager_avalonia.ViewModels;
 using library_manager_avalonia.Core.Enums;
 using library_manager_avalonia.Core.Windows;
 using Microsoft.Extensions.DependencyInjection;
+using System.Linq;
 
 namespace library_manager_avalonia.Views
 {
@@ -311,6 +312,7 @@ namespace library_manager_avalonia.Views
 
                 await MsgBox.SuccessAsync("Sukces", $"Poprawnie dodano wypożyczenie książki \"{addRental.SelectedBook.Title}\" użytkownikowi \"{addRental.FirstName} {addRental.LastName}\"");
                 await RefreshRentals();
+                await RefreshBooks();
             }
             else
             {
@@ -348,6 +350,11 @@ namespace library_manager_avalonia.Views
             {
                 var books = await _bookRepository.GetBooksWithAuthorsAndCategoriesAsync();
                 viewModel.LoadBooks(books);
+
+                var rentals = await _rentalRepository.GetAllAsync();
+                var rentedBookIds = rentals.Select(rental => rental.BookId);
+
+                viewModel.LoadRentalBooks(books.Where(book => !rentedBookIds.Contains(book.Id)));
             }
         }
 

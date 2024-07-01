@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using library_manager_avalonia.Models;
 using ReactiveUI;
-using DynamicData;
 
 namespace library_manager_avalonia.ViewModels
 {
@@ -40,6 +39,7 @@ namespace library_manager_avalonia.ViewModels
         public ObservableCollection<CategoryViewModel> Categories { get; private set; }
         public ObservableCollection<AuthorViewModel> Authors { get; private set; }
         public ObservableCollection<BookViewModel> Books { get; private set; }
+        public ObservableCollection<BookViewModel> RentalBooks { get; private set; }
         public ObservableCollection<RentalViewModel> Rentals { get; private set; }
 
         public MainWindowViewModel()
@@ -47,6 +47,7 @@ namespace library_manager_avalonia.ViewModels
             Categories = new ObservableCollection<CategoryViewModel>();
             Authors = new ObservableCollection<AuthorViewModel>();
             Books = new ObservableCollection<BookViewModel>();
+            RentalBooks = new ObservableCollection<BookViewModel>();
             Rentals = new ObservableCollection<RentalViewModel>();
 
             AddRental = new AddRentalViewModel();
@@ -93,6 +94,21 @@ namespace library_manager_avalonia.ViewModels
                 foreach (var book in bookViewModels)
                 {
                     Books.Add(book);
+                }
+            }
+        }
+
+        public void LoadRentalBooks(IEnumerable<Book> books)
+        {
+            int orderNr = 1;
+            var bookViewModels = books.Select(book => new BookViewModel(book, orderNr++)).ToList();
+
+            if (RentalBooks != null)
+            {
+                RentalBooks.Clear();
+                foreach (var book in bookViewModels)
+                {
+                    RentalBooks.Add(book);
                 }
             }
         }
